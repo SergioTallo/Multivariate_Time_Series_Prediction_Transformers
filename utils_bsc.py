@@ -116,4 +116,19 @@ def create_batches(dataset, size):
             batch_set.append(data_set)
     
     return np.array(batch_set)
-                                      
+
+
+class Transformer(nn.Module):
+    # Tranformer model taking a sequence of 18
+    # time series values and producing a single value
+    def __init__(self, input_size, hidden_size, output_size):
+        super(Transformer, self).__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.i2h = nn.Linear(input_size, hidden_size)
+        self.h2o = nn.Linear(hidden_size, output_size)
+    def forward(self, input):
+        hidden = self.i2h(input)
+        output = self.h2o(hidden)
+        return output
