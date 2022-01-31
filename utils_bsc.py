@@ -79,4 +79,41 @@ def daily_plot(data, col, name):
     ax1.boxplot(datafix)
     plt.show()
             
+def create_batches(dataset, size):
+    
+    dailyset = []
+    j = 0
+    
+    for i in range(1440, dataset.shape[0]+1, 1440):
+
+        temp_set = dataset.iloc[j:i]
+
+        j = i
+
+        dailyset.append(temp_set)
+                                      
+    weekdayset = []
         
+    for i in range(7):
+        for j in range(0, 5):
+            if (j + 7*i) < len(dailyset):
+                weekdayset.append(dailyset[j + 7*i])
+            else:
+                break
+           
+           
+    end_set = []
+
+    for n in weekdayset:
+        temp_set = n.iloc[240:1170]
+        end_set.append(temp_set)
+             
+    batch_set = []
+    
+    for m in end_set:
+        for i in range(0, len(m) - size):
+            data_set = m.iloc[i:i+size, 1:]
+            batch_set.append(data_set)
+    
+    return np.array(batch_set)
+                                      
