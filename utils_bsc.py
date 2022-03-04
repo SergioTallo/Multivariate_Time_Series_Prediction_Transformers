@@ -123,10 +123,14 @@ def create_batches(dataset, size, device):
         for i in range(0, len(m) - size):
             data_set = m.iloc[i:i + size, 1:]
             if device != 'cuda:0':
-              torch_tensor = torch.tensor(data_set.values)
-              batch_set.append(torch_tensor)
+                print('CPU')
+                torch_tensor = torch.tensor(data_set.values)
+                print(torch_tensor.get_device())
+                batch_set.append(torch_tensor)
             else:
-              torch_tensor = torch.cuda.tensor(data_set.values)
-              batch_set.append(torch_tensor)
+                print('GPU')
+                torch_tensor = torch.cuda.tensor(data_set.values)
+                print(torch_tensor.get_device())
+                batch_set.append(torch_tensor)
 
     return batch_set
