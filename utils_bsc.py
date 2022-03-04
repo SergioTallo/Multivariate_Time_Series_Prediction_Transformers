@@ -91,7 +91,7 @@ def daily_plot(data, col, name):
     plt.show()
 
 
-def create_batches(dataset, size):
+def create_batches(dataset, size, device):
     dailyset = []
     j = 0
 
@@ -122,7 +122,11 @@ def create_batches(dataset, size):
     for m in end_set:
         for i in range(0, len(m) - size):
             data_set = m.iloc[i:i + size, 1:]
-            torch_tensor = torch.tensor(data_set.values)
-            batch_set.append(torch_tensor)
+            if device != 'cuda:0':
+              torch_tensor = torch.tensor(data_set.values)
+              batch_set.append(torch_tensor)
+            else:
+              torch_tensor = torch.cuda.tensor(data_set.values)
+              batch_set.append(torch_tensor)
 
     return batch_set
