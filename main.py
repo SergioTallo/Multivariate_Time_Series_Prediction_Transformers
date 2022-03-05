@@ -12,12 +12,11 @@ from tqdm import tqdm
 
 print("Number of processors: ", mp.cpu_count())
 
-
-
-
 print('First')
 manual_seed(0)
 src = rand(10, 30, 18)
+
+print(src.size())
 
 model = Transformer(num_encoder_layers=1,
                     num_decoder_layers=1,
@@ -29,8 +28,9 @@ model = Transformer(num_encoder_layers=1,
                     mask=True,
                     device=device("cpu"))(src, src)
 
-print(len(model[0]))
+print(model.size())
 
 for i in range(src.size(1)):
-    print(src[0][i])
-    print(model[0][i])
+    print(f'Batch: {i}')
+    print(src[i][0])
+    print(model[i][0])

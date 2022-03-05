@@ -41,17 +41,19 @@ class Transformer(nn.Module):
 
     def forward(self, src, target):
 
-        output = []
+        output = torch.empty(size=src.size())
 
         for i, element in enumerate(tqdm(src)):
             input = torch.reshape(element, (1, element.size(0), element.size(1)))
-            trgt = torch.reshape(target[i], (1, target.size(1), target.size(2)))
 
             step_1 = self.encoder(input)
-            out = self.decoder(src=trgt, memory=step_1)
 
-            print(len(out))
+            for j in range(src.size(1)):
+                trgt = torch.reshape(target[i][j], (1, target.size(1), target.size(2)))
 
-            output.append(out)
+
+                out = self.decoder(src=trgt, memory=step_1)
+
+            output[i] = out
 
         return output

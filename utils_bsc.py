@@ -93,13 +93,6 @@ def daily_plot(data, col, name):
 
 def create_batches(dataset, size, device):
 
-    print(device)
-
-    if torch.cuda.is_available():
-      print('GPU')
-    else:
-      print('CPU')
-
     dailyset = []
     j = 0
 
@@ -130,13 +123,7 @@ def create_batches(dataset, size, device):
     for m in end_set:
         for i in range(0, len(m) - size):
             data_set = m.iloc[i:i + size, 1:]
-            torch_tensor = torch.tensor(data_set.values)
-
-            if torch.cuda.is_available():
-                torch_tensor = torch_tensor.cuda()
-                batch_set.append(torch_tensor)
-
-            else:
-                batch_set.append(torch_tensor)
+            torch_tensor = torch.tensor(data_set.values).to(device)
+            batch_set.append(torch_tensor)
 
     return batch_set
