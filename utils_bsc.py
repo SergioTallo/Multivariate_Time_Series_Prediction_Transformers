@@ -1,5 +1,4 @@
 import numpy as np
-import torch.nn as nn
 import matplotlib.pyplot as plt
 from platform import python_version
 import pandas as pd
@@ -91,7 +90,7 @@ def daily_plot(data, col, name):
     plt.show()
 
 
-def create_batches(dataset, size, device):
+def create_batches(dataset, batch_size: int, device) -> list:
 
     dailyset = []
     j = 0
@@ -121,8 +120,8 @@ def create_batches(dataset, size, device):
     batch_set = []
 
     for m in end_set:
-        for i in range(0, len(m) - size):
-            data_set = m.iloc[i:i + size, 1:]
+        for i in range(0, len(m) - batch_size):
+            data_set = m.iloc[i:i + batch_size, 1:]
             torch_tensor = torch.tensor(data_set.values).to(device)
             batch_set.append(torch_tensor)
 
