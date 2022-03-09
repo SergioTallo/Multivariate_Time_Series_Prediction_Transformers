@@ -4,6 +4,7 @@ from platform import python_version
 import pandas as pd
 import sklearn
 import torch
+from tqdm import tqdm
 
 
 def print_versions():
