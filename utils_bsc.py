@@ -95,7 +95,7 @@ def create_batches(dataset, batch_size: int, device) -> list:
     dailyset = []
     j = 0
 
-    for i in range(1440, dataset.shape[0] + 1, 1440):
+    for i in tqdm(range(1440, dataset.shape[0] + 1, 1440)):
         temp_set = dataset.iloc[j:i]
 
         j = i
@@ -113,13 +113,13 @@ def create_batches(dataset, batch_size: int, device) -> list:
 
     end_set = []
 
-    for n in weekdayset:
+    for n in tqdm(weekdayset):
         temp_set = n.iloc[240:1170]
         end_set.append(temp_set)
 
     batch_set = []
 
-    for m in end_set:
+    for m in tqdm(end_set):
         for i in range(0, len(m) - batch_size):
             data_set = m.iloc[i:i + batch_size, 1:]
             torch_tensor = torch.tensor(data_set.values).to(device)
