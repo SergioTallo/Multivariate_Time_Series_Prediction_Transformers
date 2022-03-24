@@ -4,6 +4,7 @@ from platform import python_version
 import pandas as pd
 import sklearn
 import torch
+import seaborn
 from tqdm import tqdm
 
 
