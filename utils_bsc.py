@@ -14,6 +14,7 @@ def print_versions():
     print(f'Numpy: {np.__version__}')
     print(f'PyTorch: {torch.__version__}')
     print(f'Sklearn: {sklearn.__version__}')
+    print(f'seaborn: {seaborn.__version__}')
 
 
 def week_plot(data, col, name):
