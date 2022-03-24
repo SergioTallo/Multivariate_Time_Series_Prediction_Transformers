@@ -91,39 +91,62 @@ def daily_plot(data, col, name):
     plt.show()
 
 
-def create_batches(dataset, batch_size: int, device) -> list:
+def create_batches(dataset, batch_size, weekdays = False, weekend = False):
+  batch_set = []
+  pair_set = []
 
-    dailyset = []
-    j = 0
+  if weekdays == True:
+    counter = 0
+    for i in tqdm(range(0, len(dataset) - batch_size)):
+      if counter > 901:
+        counter += 1
+        if counter == 931:
+          counter = 0
+      else:
+        batch_set.append(dataset.iloc[i:i + batch_size, 1:])
+        counter += 1
 
-    for i in range(1440, dataset.shape[0] + 1, 1440):
-        temp_set = dataset.iloc[j:i]
+  elif weekend == True:
+    counter = 0
+    days = 0
 
-        j = i
+    for i in tqdm(range(0, len(dataset) - batch_size)):
 
-        dailyset.append(temp_set)
+      if days < 5:
+        
+        if counter >= 0 and counter <= 211:
+          batch_set.append(dataset.iloc[i:i + batch_size, 1:])
+    
+        if counter >= 240 and counter <= 480:
+          batch_set.append(dataset.iloc[i:i + batch_size, 1:])
 
-    weekdayset = []
+        counter += 1
 
-    for i in range(7):
-        for j in range(0, 5):
-            if (j + 7 * i) < len(dailyset):
-                weekdayset.append(dailyset[j + 7 * i])
-            else:
-                break
+        if counter == 509:
+          counter = 0
+          days += 1
 
-    end_set = []
+      else:
+        
+        if counter >= 0 and counter <= 1411:
+          batch_set.append(dataset.iloc[i:i + batch_size, 1:])
+        
+        counter += 1
 
-    for n in weekdayset:
-        temp_set = n.iloc[240:1170]
-        end_set.append(temp_set)
+        if counter == 1440:
+          counter = 0
+          days += 1
 
-    batch_set = []
+        if days == 7:
+          days = 0
 
-    for m in tqdm(end_set):
-        for i in range(0, len(m) - batch_size):
-            data_set = m.iloc[i:i + batch_size, 1:]
-            torch_tensor = torch.tensor(data_set.values).to(device)
-            batch_set.append(torch_tensor)
+  else:
+    for i in tqdm(range(0, len(dataset) - batch_size)):
+        batch_set.append(dataset.iloc[i:(i + batch_size), 1:])
+    
+  for i in range(len(batch_set) - 1):
+    data =  batch_set[i]
+    target = batch_set[i+1]
+    pair_set.append((data, target))
 
-    return batch_set
+  return np.array(pair_set)
