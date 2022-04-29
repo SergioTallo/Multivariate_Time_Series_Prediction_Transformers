@@ -147,7 +147,7 @@ def create_batches(dataset, batch_size, weekdays = False, weekend = False):
         batch_set.append(dataset.iloc[i:(i + batch_size), 1:])
     
   for i in range(len(batch_set) - 1):
-    data =  batch_set[i]
+    data = batch_set[i]
     target = batch_set[i+1]
     pair_set.append((data, target))
 
