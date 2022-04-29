@@ -1,5 +1,5 @@
 import torch
-from torch import nn, device, manual_seed, rand
+from torch import nn, device
 from tqdm import tqdm
 
 from TransformerEncoderTallo import TransformerEncoder as Encoder
@@ -49,8 +49,8 @@ class Transformer(nn.Module):
             step_1 = self.encoder(input)
 
             for j in range(src.size(1)):
-                trgt = torch.reshape(target[i][j], (1, target.size(1), target.size(2)))
 
+                trgt = torch.reshape(target[i][j], (1, target.size(1), target.size(2)))
 
                 out = self.decoder(src=trgt, memory=step_1)
 

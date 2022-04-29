@@ -71,8 +71,9 @@ def feed_forward_layer(d_model: int, units_hidden_layer: int, activation: nn.Mod
     return layer
 
 
-# todo: comment positional encoding
+# positional encoding
 def positional_encoding(seq_len: int, dim_model: int, device: device = device("cpu")) -> tensor:
+
     pos = torch.arange(seq_len, dtype=float32, device=device).reshape(1, -1, 1)
     dim = torch.arange(dim_model, dtype=float32, device=device).reshape(1, 1, -1)
     phase = pos / (1e4 ** (torch.div(dim, dim_model, rounding_mode='floor')))
