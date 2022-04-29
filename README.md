@@ -1,4 +1,4 @@
-# Multivariate_Time_Series_Prediction_Transformers
+# Multivariate time series prediction using transformers architecture
 
 The following Notebook shows the coding part of my Bachelor Thesis for the Information and Communication Systems and Services 
 bachelor degree in the University of Applied Science Technikum Wien.
