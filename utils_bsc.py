@@ -8,16 +8,6 @@ import seaborn
 from tqdm import tqdm
 
 
-def print_versions():
-    print('versions of packages:')
-    print(f'Python: {python_version()}')
-    print(f'Pandas: {pd.__version__}')
-    print(f'Numpy: {np.__version__}')
-    print(f'PyTorch: {torch.__version__}')
-    print(f'Sklearn: {sklearn.__version__}')
-    print(f'seaborn: {seaborn.__version__}')
-
-
 def week_plot(data, col, name):
     days = [0, 1440, 2880, 4320, 5760, 7200, 8640]
     daysname = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
