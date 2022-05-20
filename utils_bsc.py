@@ -1,9 +1,9 @@
 import math
-
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -105,6 +105,8 @@ def create_sequece_dataloaders(dataset, seq_length, batch_size, device):
 
     pair_set = []
 
+    print('Creating train/test data loaders')
+
     for i in tqdm(range(len(dataset) - (seq_length +1))):
         data = np.array(dataset.iloc[i:i+seq_length, 1:])
         next = np.array(dataset.iloc[i+seq_length, 1:], dtype= float)
@@ -142,8 +144,10 @@ def create_sequece_dataloaders(dataset, seq_length, batch_size, device):
     test_next = torch.from_numpy(np.array(next)).float().to(device)
     test_target = torch.from_numpy(np.array(target)).float().to(device)
 
-    print(f'length of training set (whole dataset): {training_data.shape[0]}')
-    print(f'length of test set (whole dataset): {test_data.shape[0]}')
+    print(f'Sequence length: {seq_length}')
+    print(f'Batch size: {batch_size}')
+    print(f'length of training set: {training_data.shape[0]}')
+    print(f'length of test set: {test_data.shape[0]}')
     print('\n')
 
     # Create data loader to feed the model in mini batches
@@ -198,8 +202,8 @@ def create_dataloaders(dataset, device):
     test_data = torch.from_numpy(np.array(data)).float().to(device)
     test_target = torch.from_numpy(np.array(target)).float().to(device)
 
-    print(f'length of training set (whole dataset): {training_data.shape[0]}')
-    print(f'length of test set (whole dataset): {test_data.shape[0]}')
+    print(f'length of training set: {training_data.shape[0]}')
+    print(f'length of test set: {test_data.shape[0]}')
     print('\n')
 
     # Create data loader to feed the FFN in mini batches
@@ -507,3 +511,79 @@ def training_transformer(model, optimizer, criterion, train_loader, test_loader,
             best_epoch = e
 
     return (best_model, best_train_loss, best_test_loss, best_epoch), epoch_loss_train, epoch_loss_test
+
+def define_train_transformers(models, device, dataset, training_results_transformers, path_save, colab):
+    for i in models:
+        if models[i][7] is True:
+
+            loader_train, loader_test = create_sequece_dataloaders(dataset=dataset, seq_length=models[i][8], batch_size=models[i][9], device=device)
+
+            # Initialize Transformer Model and Optimizer
+            model = Transformer (num_encoder_layers=models[i][0],
+                                           num_decoder_layers=models[i][1],
+                                           feature_size=18,
+                                           output_size=18,
+                                           num_heads=models[i][2],
+                                           dim_feedforward=models[i][3],
+                                           device = device,
+                                           batch_first=True)
+
+            print(f'Model: {type(model).__name__} - {i}')
+            print(f'{count_parameters(model)} trainable parameters.')
+
+            n_epochs = 200
+            learning_rate = 0.01
+
+            if models[i][4] == 'SGD':
+
+                if models[i][6] is not None:
+                    optimizer = torch.optim.SGD(model.parameters(), lr=models[i][5], momentum=models[i][6])
+                else:
+                    optimizer = torch.optim.SGD(model.parameters(), lr=models[i][5])
+            elif models[i][4] == 'ADAM':
+                optimizer = torch.optim.Adam(model.parameters(), lr=models[i][5])
+
+            criterion = nn.MSELoss()
+
+            start_time = datetime.now()
+
+            best_results, train_losses, test_losses = training_transformer(
+                model= model,
+                optimizer= optimizer,
+                criterion= criterion,
+                train_loader= loader_train,
+                test_loader= loader_test,
+                n_epochs= n_epochs)
+
+
+            Transformer_trained_Model = best_results[0]
+            best_train_loss = best_results[1]
+            best_test_loss = best_results[2]
+            best_epoch_number = best_results[3]
+
+            end_time = datetime.now()
+            time_diff = (end_time - start_time)
+            execution_time = time_diff.total_seconds()
+
+            print(f'Best test loss at epoch {best_epoch_number}')
+            print(f'Train Loss: {best_train_loss}')
+            print(f'Test Loss: {best_test_loss}')
+            print(f'\nTraining time for {n_epochs} epochs: {execution_time} seconds')
+
+            print(f'Training time: {execution_time} seconds')
+
+            training_results_transformers[i] = [Transformer_trained_Model, best_train_loss, best_test_loss, best_epoch_number, train_losses, test_losses, execution_time]
+
+            # save to npy file
+            np.save(path_save + '/Transformer_' + i + '_train.npy', train_losses)
+            np.save(path_save + '/Transformer_' + i + '_test.npy', test_losses)
+            torch.save(Transformer_trained_Model, path_save + '/Transformer_' + models[i][8] + '.pt')
+
+            if colab is True:
+                from google.colab import files
+
+                files.download(path_save + '/Transformer_' + i + '_train.npy')
+                files.download(path_save + '/Transformer_' + i + '_test.npy')
+                files.download(path_save + '/Transformer_' + i + '.pt')
+
+    return training_results_transformers
